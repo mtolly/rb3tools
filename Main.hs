@@ -4,7 +4,8 @@ import Paths_ogg2mogg
 import System.Environment
 import System.Info (os)
 import System.FilePath
-import System.Directory (copyFile, setCurrentDirectory, getCurrentDirectory)
+import System.Directory
+  (copyFile, setCurrentDirectory, getCurrentDirectory, createDirectory)
 import System.IO
 import System.IO.Temp (withSystemTempDirectory)
 import System.Process (readProcess)
@@ -22,19 +23,29 @@ main = do
       prog <- getProgName
       hPutStrLn stderr $ "Usage: " ++ prog ++ " in.ogg out.mogg"
 
+copyDataTo :: FilePath -> FilePath -> IO FilePath
+copyDataTo tmp f = do
+  orig <- getDataFileName f
+  let new = tmp </> f
+  copyFile orig new
+  return new
+
 run :: FilePath -> FilePath -> IO ()
 run oggRel moggRel = do
   pwd <- getCurrentDirectory
   let ogg  = pwd </> oggRel
       mogg = pwd </> moggRel
-  oggenc <- getDataFileName "oggenc.exe"
-  let ogg' = takeDirectory oggenc </> "audio.ogg"
-  copyFile ogg ogg'
-  magma <- getDataFileName "MagmaCompiler.exe"
-  rbproj <- getDataFileName "hellskitchen.rbproj"
-  setCurrentDirectory $ takeDirectory magma
-  withSystemTempDirectory "ogg2mogg" $ \temp -> do
-    let rba = temp </> "out.rba"
+  withSystemTempDirectory "ogg2mogg" $ \tmp -> do
+    setCurrentDirectory tmp
+    magma <- copyDataTo tmp "MagmaCompiler.exe"
+    let ogg' = tmp </> "audio.ogg"
+    copyFile ogg ogg'
+    rbproj <- copyDataTo tmp "hellskitchen.rbproj"
+    createDirectory $ tmp </> "gen"
+    mapM_ (copyDataTo tmp)
+      [ "notes.mid", "cover.bmp", "silence.wav", "oggenc.exe"
+      , "gen/main_pc.hdr", "gen/main_pc_0.ark" ]
+    let rba = tmp </> "out.rba"
     _ <- if os == "mingw"
       then readProcess magma [rbproj, rba] ""
       else readProcess "wine" [magma, rbproj, rba] ""
