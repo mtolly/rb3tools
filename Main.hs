@@ -47,7 +47,7 @@ run oggRel moggRel = do
       [ "notes.mid", "cover.bmp", "silence.wav", "oggenc.exe"
       , "gen/main_pc.hdr", "gen/main_pc_0.ark" ]
     let rba = tmp </> "out.rba"
-    _ <- if os == "mingw"
+    _ <- if os `elem` ["mingw", "mingw32"]
       then readProcess magma [rbproj, rba] ""
       else readProcess "wine" [magma, rbproj, rba] ""
     IO.withBinaryFile rba IO.ReadMode $ \hrba -> do
