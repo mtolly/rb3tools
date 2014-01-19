@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'tempfile'
+
+file_in = ARGV[0]
+file_out = ARGV[1]
+if !file_in or !file_out
+  STDERR.puts "Usage: #{$0} in.png out_keep.png_xbox"
+  exit 1
+end
+
+dds_file = Tempfile.new(['rb3albumart', '.dds'], encoding: 'ascii-8bit')
+dds_file.close
+`convert "#{file_in}" -resize 256x256\! "#{dds_file.path}"`
+# Requires a fairly recent version of ImageMagick to have dds write support
+
+dds_file.open
+header =
+  [ 0x01, 0x04, 0x08, 0x00, 0x00, 0x00, 0x04, 0x00 ,
+    0x01, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00 ,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ]
+File.open(file_out, 'wb') do |fout|
+  header.each { |c| fout.putc(c) }
+  dds_file.seek(0x80)
+  while bs = dds_file.read(2)
+    fout.putc(bs[1].ord)
+    fout.putc(bs[0].ord)
+  end
+end
