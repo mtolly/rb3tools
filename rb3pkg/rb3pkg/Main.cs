@@ -54,7 +54,7 @@ namespace rb3pkg
 				Console.WriteLine ("Also contains code from RB3Maker by Technicolor:");
 				Console.WriteLine ("http://rockband.scorehero.com/forum/viewtopic.php?t=34542");
 				Console.WriteLine ("");
-				Console.WriteLine ("Usage: rb3pkg [options]");
+				Console.WriteLine ("Usage: rb3pkg [options] [file_out.con]");
 				p.WriteOptionDescriptions(Console.Out);
 				return;
 			}
