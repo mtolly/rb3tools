@@ -3,6 +3,7 @@ using X360.STFS;
 using NDesk.Options;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace rb3pkg
 {
@@ -71,7 +72,7 @@ namespace rb3pkg
 
 			addFiles (xsession, source_dir, "");
 
-			RSAParams xParams = new RSAParams (StrongSigned.LIVE);
+			RSAParams xParams = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
 			var rec = new X360.Other.LogRecord ();
 			STFSPackage pkg = new STFSPackage (xsession, xParams, file_out, rec);
 			foreach (string s in rec.Log) {
