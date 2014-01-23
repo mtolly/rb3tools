@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# Script to convert any image to a Rock Band 3 image format.
+# Algorithm originally in Technicolor's RB3Maker, in .NET, using Tao.DevIL to
+# convert to DDS: http://rockband.scorehero.com/forum/viewtopic.php?t=34542
+# Ported by Onyxite to Ruby, using ImageMagick to convert to DDS.
+
 require 'tempfile'
 
 file_in = ARGV[0]
