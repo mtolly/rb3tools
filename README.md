@@ -21,3 +21,13 @@ Requires Ruby and ImageMagick.
 Rock Band 3 "save game" song package. The functionality is provided by
 [the X360 library by Dalavin](http://skunkiebutt.com/), and much of the code is
 from RB3Maker. Requires Visual Studio or Mono.
+
+## Installation
+
+The included script builds and installs all tools:
+
+    sudo ./install.sh
+
+`$PREFIX` is `/usr/local` by default but can be overridden:
+
+    PREFIX=~/ ./install.sh
