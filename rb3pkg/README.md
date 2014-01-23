@@ -1,6 +1,7 @@
-This is just a simple command-line wrapper around the
-[X360](http://skunkiebutt.com/) library to put
-together Xbox 360 STFS packages, geared toward Rock Band 3 customs.
+This is a stripped-down command-line version of
+[RB3Maker](http://rockband.scorehero.com/forum/viewtopic.php?t=34542)
+with the single task of packaging a folder into a Rock Band 3 CON-signed custom
+song or upgrade package.
 
 ## Usage
 

@@ -49,11 +49,11 @@ namespace rb3pkg
             }
 
             if (show_help) {
-                Console.WriteLine ("rb3pkg, command-line tool to make custom packages for Rock Band 3");
+                Console.WriteLine ("rb3pkg, command-line custom package builder for Rock Band 3");
+                Console.WriteLine ("Basically a stripped-down version of RB3Maker by Technicolor:");
+                Console.WriteLine ("<http://rockband.scorehero.com/forum/viewtopic.php?t=34542>");
                 Console.WriteLine ("Functionality by DJ SkunkieButt's X360 .NET library <http://skunkiebutt.com/>");
                 Console.WriteLine ("Command-line program by Michael Tolly <onyxite@gmail.com>");
-                Console.WriteLine ("Also contains code from RB3Maker by Technicolor:");
-                Console.WriteLine ("http://rockband.scorehero.com/forum/viewtopic.php?t=34542");
                 Console.WriteLine ("");
                 Console.WriteLine ("Usage: rb3pkg [options] [file_out.con]");
                 p.WriteOptionDescriptions(Console.Out);
