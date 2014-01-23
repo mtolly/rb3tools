@@ -72,13 +72,13 @@ namespace rb3pkg
 
 			addFiles (xsession, source_dir, "");
 
-			RSAParams xParams = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
+            RSAParams firstParams = new RSAParams(StrongSigned.LIVE);
 			var rec = new X360.Other.LogRecord ();
-			STFSPackage pkg = new STFSPackage (xsession, xParams, file_out, rec);
+            STFSPackage pkg = new STFSPackage(xsession, firstParams, file_out, rec);
 			foreach (string s in rec.Log) {
 				Console.WriteLine (s);
 			}
-			pkg.FlushPackage (xParams);
+            pkg.FlushPackage(firstParams);
 			pkg.CloseIO ();
 
 			if (unlock) {
@@ -97,6 +97,27 @@ namespace rb3pkg
 					}
 				}
 			}
+
+            rec = new X360.Other.LogRecord();
+            pkg = new STFSPackage(file_out, rec);
+            if (!pkg.ParseSuccess)
+            {
+                Console.WriteLine("Error reading back the package to fix.");
+            }
+            else
+            {
+                RSAParams secondParams = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
+                if (secondParams.Valid)
+                {
+                    pkg.FlushPackage(secondParams);
+                }
+                pkg.CloseIO();
+            }
+            foreach (string s in rec.Log)
+            {
+                Console.WriteLine(s);
+            }
+
 			Console.WriteLine ("Done!");
 		}
 
