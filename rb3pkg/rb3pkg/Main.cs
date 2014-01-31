@@ -4,6 +4,8 @@ using NDesk.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Drawing;
+using X360.Other;
 
 namespace rb3pkg
 {
@@ -69,6 +71,12 @@ namespace rb3pkg
             xsession.HeaderData.ThisType = pkg_type;
             xsession.HeaderData.Title_Display = package_title;
             xsession.HeaderData.Description = description;
+
+            string pngfilename = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/rb3.png";
+            Bitmap pngbitmap = new Bitmap(pngfilename);
+            byte[] pngbytes = Imaging.ImageToBytes(pngbitmap, System.Drawing.Imaging.ImageFormat.Png);
+            xsession.HeaderData.PackageImageBinary = pngbytes;
+            xsession.HeaderData.ContentImageBinary = pngbytes;
 
             addFiles (xsession, source_dir, "");
 
