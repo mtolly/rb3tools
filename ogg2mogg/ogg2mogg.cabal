@@ -1,5 +1,5 @@
 name:               ogg2mogg
-version:            0.0.1
+version:            0.1
 synopsis:           Add a header to OGG files for use in Rock Band games
 author:             Michael Tolly
 maintainer:         miketolly@gmail.com
