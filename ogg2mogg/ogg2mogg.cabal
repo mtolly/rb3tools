@@ -5,19 +5,14 @@ author:             Michael Tolly
 maintainer:         miketolly@gmail.com
 build-type:         Simple
 cabal-version:      >= 1.8
-data-dir:           data
-data-files:         MagmaCompiler.exe, oggenc.exe
-                    , gen/main_pc_0.ark, gen/main_pc.hdr
-                    , cover.bmp, notes.mid, silence.wav
-                    , hellskitchen.rbproj
 
 executable ogg2mogg
   main-is:          Main.hs
-  other-modules:    Paths_ogg2mogg
   build-depends:    base >= 4.6 && < 5.0
                     , filepath == 1.3.*
                     , directory == 1.2.*
                     , temporary == 1.1.*
                     , process == 1.1.*
                     , bytestring == 0.10.*
+                    , FindBin >= 0.0.5 && < 0.1
   ghc-options:      -Wall

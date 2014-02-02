@@ -8,11 +8,10 @@ import qualified System.IO as IO
 
 import qualified Data.ByteString as B
 import qualified System.Directory as Dir
+import System.Environment.FindBin (getProgPath)
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
 import System.Process (readProcess)
-
-import Paths_ogg2mogg (getDataFileName)
 
 main :: IO ()
 main = do
@@ -26,7 +25,7 @@ main = do
 
 copyDataTo :: FilePath -> FilePath -> IO FilePath
 copyDataTo tmp f = do
-  orig <- getDataFileName f
+  orig <- fmap (</> f) getProgPath
   let new = tmp </> f
   Dir.copyFile orig new
   return new
