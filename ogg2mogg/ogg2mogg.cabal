@@ -18,6 +18,6 @@ executable ogg2mogg
                     , filepath == 1.3.*
                     , directory == 1.2.*
                     , temporary == 1.1.*
-                    , process == 1.1.*
+                    , process >= 1.1 && < 1.3
                     , bytestring == 0.10.*
   ghc-options:      -Wall
