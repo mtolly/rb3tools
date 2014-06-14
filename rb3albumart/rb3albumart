@@ -18,6 +18,7 @@ dds_file = Tempfile.new(['rb3albumart', '.dds'], encoding: 'ascii-8bit')
 dds_file.close
 `convert "#{file_in}" -resize 256x256\! "#{dds_file.path}"`
 # Requires a fairly recent version of ImageMagick to have dds write support
+exit 1 if $? != 0
 
 dds_file.open
 header =
