@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Main (main) where
 
 import Data.Bits (shiftL)
@@ -7,12 +8,18 @@ import System.Info (os)
 import qualified System.IO as IO
 
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as BL
 import qualified System.Directory as Dir
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
 import System.Process (readProcess)
 
-import Paths_ogg2mogg (getDataFileName)
+import Data.FileEmbed (embedFile)
+import Codec.Archive.Tar (extract)
+import Codec.Compression.GZip (decompress)
+
+tarGz :: BL.ByteString
+tarGz = BL.fromStrict $(embedFile "data.tar.gz")
 
 main :: IO ()
 main = do
@@ -24,32 +31,29 @@ main = do
       prog <- getProgName
       IO.hPutStrLn IO.stderr $ "Usage: " ++ prog ++ " in.ogg out.mogg"
 
-copyDataTo :: FilePath -> FilePath -> IO FilePath
-copyDataTo tmp f = do
-  orig <- getDataFileName f
-  let new = tmp </> f
-  Dir.copyFile orig new
-  return new
-
 run :: FilePath -> FilePath -> IO ()
 run oggRel moggRel = do
   pwd <- Dir.getCurrentDirectory
   let ogg  = pwd </> oggRel
       mogg = pwd </> moggRel
   withSystemTempDirectory "ogg2mogg" $ \tmp -> do
+
     Dir.setCurrentDirectory tmp
-    magma <- copyDataTo tmp "MagmaCompiler.exe"
-    let ogg' = tmp </> "audio.ogg"
+    let tar = tmp </> "data.tar"
+    BL.writeFile tar $ decompress tarGz
+    extract tmp tar
+    let tmp' = tmp </> "data"
+
+    Dir.setCurrentDirectory tmp'
+    let ogg' = tmp' </> "audio.ogg"
+        rbproj = tmp' </> "hellskitchen.rbproj"
+        rba = tmp' </> "out.rba"
+        magma = tmp' </> "MagmaCompiler.exe"
     Dir.copyFile ogg ogg'
-    rbproj <- copyDataTo tmp "hellskitchen.rbproj"
-    Dir.createDirectory $ tmp </> "gen"
-    mapM_ (copyDataTo tmp)
-      [ "notes.mid", "cover.bmp", "silence.wav", "oggenc.exe"
-      , "gen/main_pc.hdr", "gen/main_pc_0.ark" ]
-    let rba = tmp </> "out.rba"
     _ <- if os `elem` ["mingw", "mingw32"]
       then readProcess magma [rbproj, rba] ""
       else readProcess "wine" [magma, rbproj, rba] ""
+    
     IO.withBinaryFile rba IO.ReadMode $ \hrba -> do
       IO.hSeek hrba IO.AbsoluteSeek $ 4 + (4 * 3)
       moggOffset <- hReadWord32le hrba

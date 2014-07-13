@@ -3,21 +3,27 @@ version:            0.1
 synopsis:           Add a header to OGG files for use in Rock Band games
 author:             Michael Tolly
 maintainer:         miketolly@gmail.com
-build-type:         Simple
+build-type:         Custom
 cabal-version:      >= 1.8
-data-dir:           data
-data-files:         MagmaCompiler.exe, oggenc.exe
-                    , gen/main_pc_0.ark, gen/main_pc.hdr
-                    , cover.bmp, notes.mid, silence.wav
-                    , hellskitchen.rbproj
+extra-source-files: data/cover.bmp
+                    data/hellskitchen.rbproj
+                    data/MagmaCompiler.exe
+                    data/notes.mid
+                    data/oggenc.exe
+                    data/silence.wav
+                    data/gen/main_pc.hdr
+                    data/gen/main_pc_0.ark
+                    README.md
 
 executable ogg2mogg
   main-is:          Main.hs
-  other-modules:    Paths_ogg2mogg
   build-depends:    base >= 4.6 && < 5.0
                     , filepath == 1.3.*
                     , directory == 1.2.*
                     , temporary == 1.1.*
                     , process >= 1.1 && < 1.3
                     , bytestring == 0.10.*
+                    , file-embed >= 0.0.7 && < 0.1
+                    , tar >= 0.4.0.1 && < 0.5
+                    , zlib >= 0.5.4.1 && < 0.6
   ghc-options:      -Wall
