@@ -1,9 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Main (main) where
+module Codec.Container.Ogg.Mogg (oggToMogg) where
 
 import Data.Bits (shiftL)
 import Data.Word (Word32)
-import System.Environment (getArgs, getProgName)
 import System.Info (os)
 import qualified System.IO as IO
 
@@ -21,18 +20,8 @@ import Codec.Compression.GZip (decompress)
 tarGz :: BL.ByteString
 tarGz = BL.fromStrict $(embedFile "data.tar.gz")
 
-main :: IO ()
-main = do
-  argv <- getArgs
-  case argv of
-    [x, y] -> run x y
-    [x]    -> run x $ x ++ ".mogg"
-    _      -> do
-      prog <- getProgName
-      IO.hPutStrLn IO.stderr $ "Usage: " ++ prog ++ " in.ogg out.mogg"
-
-run :: FilePath -> FilePath -> IO ()
-run oggRel moggRel = do
+oggToMogg :: FilePath -> FilePath -> IO ()
+oggToMogg oggRel moggRel = do
   pwd <- Dir.getCurrentDirectory
   let ogg  = pwd </> oggRel
       mogg = pwd </> moggRel
