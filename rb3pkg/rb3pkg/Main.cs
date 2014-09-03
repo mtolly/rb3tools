@@ -78,53 +78,20 @@ namespace rb3pkg
             xsession.HeaderData.PackageImageBinary = pngbytes;
             xsession.HeaderData.ContentImageBinary = pngbytes;
 
+            if (unlock) {
+                xsession.HeaderData.UnlockDLC();
+            }
+
             addFiles (xsession, source_dir, "");
 
-            RSAParams firstParams = new RSAParams(StrongSigned.LIVE);
+            RSAParams signer = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
             var rec = new X360.Other.LogRecord ();
-            STFSPackage pkg = new STFSPackage(xsession, firstParams, file_out, rec);
+            STFSPackage pkg = new STFSPackage(xsession, signer, file_out, rec);
             foreach (string s in rec.Log) {
                 Console.WriteLine (s);
             }
-            pkg.FlushPackage(firstParams);
+            pkg.FlushPackage(signer);
             pkg.CloseIO ();
-
-            if (unlock) {
-                using (FileStream stream = new FileStream(file_out, FileMode.Open)) {
-                    using (BinaryWriter writer = new BinaryWriter(stream)) {
-                        long pos = writer.Seek (0x237, SeekOrigin.Begin);
-                        if (pos != 0x237) {
-                            Console.WriteLine ("rb3pkg: Error unlocking " + file_out);
-                        }
-                        else {
-                            writer.Write (1);
-                            writer.Close ();
-                            stream.Close ();
-                            Console.WriteLine ("File unlocked succesfully.");
-                        }
-                    }
-                }
-            }
-
-            rec = new X360.Other.LogRecord();
-            pkg = new STFSPackage(file_out, rec);
-            if (!pkg.ParseSuccess)
-            {
-                Console.WriteLine("Error reading back the package to fix.");
-            }
-            else
-            {
-                RSAParams secondParams = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
-                if (secondParams.Valid)
-                {
-                    pkg.FlushPackage(secondParams);
-                }
-                pkg.CloseIO();
-            }
-            foreach (string s in rec.Log)
-            {
-                Console.WriteLine(s);
-            }
 
             Console.WriteLine ("Done!");
         }
