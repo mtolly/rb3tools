@@ -52,6 +52,8 @@ oggToMogg oggRel moggRel = do
       moggData <- B.hGet hrba $ fromIntegral moggLength
       B.writeFile mogg moggData
 
+  Dir.setCurrentDirectory pwd
+
 hReadWord32le :: IO.Handle -> IO Word32
 hReadWord32le h = do
   [a, b, c, d] <- fmap (map fromIntegral . B.unpack) $ B.hGet h 4
