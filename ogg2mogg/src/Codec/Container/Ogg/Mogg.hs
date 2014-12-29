@@ -1,24 +1,22 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Codec.Container.Ogg.Mogg (oggToMogg) where
 
+import Control.Monad (forM_)
 import Data.Bits (shiftL)
 import Data.Word (Word32)
 import System.Info (os)
 import qualified System.IO as IO
 
 import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as BL
 import qualified System.Directory as Dir
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
 import System.Process (readProcess)
 
-import Data.FileEmbed (embedFile)
-import Codec.Archive.Tar (extract)
-import Codec.Compression.GZip (decompress)
+import Data.FileEmbed (embedDir)
 
-tarGz :: BL.ByteString
-tarGz = BL.fromStrict $(embedFile "data.tar.gz")
+dataFiles :: [(FilePath, B.ByteString)]
+dataFiles = $(embedDir "data/")
 
 oggToMogg :: FilePath -> FilePath -> IO ()
 oggToMogg oggRel moggRel = do
@@ -28,16 +26,13 @@ oggToMogg oggRel moggRel = do
   withSystemTempDirectory "ogg2mogg" $ \tmp -> do
 
     Dir.setCurrentDirectory tmp
-    let tar = tmp </> "data.tar"
-    BL.writeFile tar $ decompress tarGz
-    extract tmp tar
-    let tmp' = tmp </> "data"
+    Dir.createDirectory "gen"
+    forM_ dataFiles $ uncurry B.writeFile
 
-    Dir.setCurrentDirectory tmp'
-    let ogg' = tmp' </> "audio.ogg"
-        rbproj = tmp' </> "hellskitchen.rbproj"
-        rba = tmp' </> "out.rba"
-        magma = tmp' </> "MagmaCompiler.exe"
+    let ogg' = tmp </> "audio.ogg"
+        rbproj = tmp </> "hellskitchen.rbproj"
+        rba = tmp </> "out.rba"
+        magma = tmp </> "MagmaCompiler.exe"
     Dir.copyFile ogg ogg'
     _ <- if os `elem` ["mingw", "mingw32"]
       then readProcess magma [rbproj, rba] ""
