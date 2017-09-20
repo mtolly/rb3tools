@@ -19,6 +19,7 @@ namespace rb3pkg
             string source_dir = ".";
             string description = "Package built with rb3pkg.";
             bool unlock = true;
+            string key_file = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin";
             string file_out = "rb3pkg_out";
             bool show_help = false;
             PackageType pkg_type = PackageType.SavedGame;
@@ -34,6 +35,8 @@ namespace rb3pkg
                     v => source_dir = v },
                 { "u|unlock", "unlock the package",
                     v => unlock = v != null },
+                { "k|key=", "key to sign with when unlocking",
+                    v => key_file = v },
                 { "d|description=", "package description",
                     v => description = v },
                 { "h|?|help", "show options",
@@ -114,7 +117,7 @@ namespace rb3pkg
             }
             else
             {
-                RSAParams secondParams = new RSAParams(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/KV.bin");
+                RSAParams secondParams = new RSAParams(key_file);
                 if (secondParams.Valid)
                 {
                     pkg.FlushPackage(secondParams);
